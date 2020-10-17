@@ -70,7 +70,7 @@ void ssd1306_contrast(SSD1306_t * dev, int contrast)
 
 void ssd1306_software_scroll(SSD1306_t * dev, int start, int end)
 {
-	ESP_LOGD(tag, "software_scroll start=%d end=%d _pages=%d", start, end, dev->_pages);
+	ESP_LOGV(tag, "software_scroll start=%d end=%d _pages=%d", start, end, dev->_pages);
 	if (start < 0 || end < 0) {
 		dev->_scEnable = false;
 	} else if (start >= dev->_pages || end >= dev->_pages) {
@@ -91,7 +91,7 @@ void ssd1306_software_scroll(SSD1306_t * dev, int start, int end)
 
 void ssd1306_scroll_text(SSD1306_t * dev, char * text, int text_len, bool invert)
 {
-	ESP_LOGD(tag, "dev->_scEnable=%d", dev->_scEnable);
+	ESP_LOGV(tag, "dev->_scEnable=%d", dev->_scEnable);
 	if (dev->_scEnable == false) return;
 
 	void (*func)(SSD1306_t * dev, int page, int seg, uint8_t * images, int width);
@@ -104,13 +104,13 @@ void ssd1306_scroll_text(SSD1306_t * dev, char * text, int text_len, bool invert
 	int srcIndex = dev->_scEnd - dev->_scDirection;
 	while(1) {
 		int dstIndex = srcIndex + dev->_scDirection;
-		ESP_LOGD(tag, "srcIndex=%d dstIndex=%d", srcIndex,dstIndex);
+		ESP_LOGV(tag, "srcIndex=%d dstIndex=%d", srcIndex,dstIndex);
 		dev->_page[dstIndex]._valid = dev->_page[srcIndex]._valid;
 		dev->_page[dstIndex]._segLen = dev->_page[srcIndex]._segLen;
 		for(int seg = 0; seg < dev->_width; seg++) {
 			dev->_page[dstIndex]._segs[seg] = dev->_page[srcIndex]._segs[seg];
 		}
-		ESP_LOGD(tag, "_valid=%d", dev->_page[dstIndex]._valid);
+		ESP_LOGV(tag, "_valid=%d", dev->_page[dstIndex]._valid);
 		if (dev->_page[dstIndex]._valid) (*func)(dev, dstIndex, 0, dev->_page[dstIndex]._segs, dev->_page[srcIndex]._segLen);
 		if (srcIndex == dev->_scStart) break;
 		srcIndex = srcIndex - dev->_scDirection;
@@ -134,13 +134,13 @@ void ssd1306_scroll_text(SSD1306_t * dev, char * text, int text_len, bool invert
 
 void ssd1306_scroll_clear(SSD1306_t * dev)
 {
-	ESP_LOGD(tag, "dev->_scEnable=%d", dev->_scEnable);
+	ESP_LOGV(tag, "dev->_scEnable=%d", dev->_scEnable);
 	if (dev->_scEnable == false) return;
 
 	int srcIndex = dev->_scEnd - dev->_scDirection;
 	while(1) {
 		int dstIndex = srcIndex + dev->_scDirection;
-		ESP_LOGD(tag, "srcIndex=%d dstIndex=%d", srcIndex,dstIndex);
+		ESP_LOGV(tag, "srcIndex=%d dstIndex=%d", srcIndex,dstIndex);
 		ssd1306_clear_line(dev, dstIndex, false);
 		dev->_page[dstIndex]._valid = false;
 		if (dstIndex == dev->_scStart) break;
